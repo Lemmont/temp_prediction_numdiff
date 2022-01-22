@@ -1,5 +1,6 @@
 from asyncore import read
 from cProfile import label
+from cgitb import reset
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -66,12 +67,36 @@ def avg_incr_temp(year, df_data):
         avg_temp_incr_data.append(vgem(25, j, df_data))
     return avg_temp_incr_data
 
+def predict(temps, acc):
+    res = []
+    for i in range(len(temps)):
+        j = i
+        while j >= 365:
+            j -= 365
+        res.append(temps[i]*((acc[j]/10)+1))
+    return res    
+
+def make_avg_acc(temps):
+    data = []
+    for i in range(len(temps)):
+        data.append(df5(temps, 1, i))
+    res = [0 for _ in range(365)]
+    for k in range(365):
+        for j in range(int(len(data)/365)):
+            res[k] += data[(j*365)+k]
+    for g in range(len(res)):
+        res[g] /= (len(data)/365)
+    return res
+
 def plot_data(year, temp, avg_temp_data, df_data, avg_incr_temp_data):
-    figure, axis = plt.subplots(2, 1)
-    axis[0].plot(temp[:365], label=f'Tempature')
+    avg_acc_total = make_avg_acc(temp)
+    _, axis = plt.subplots(2, 1)
+    axis[0].plot(temp[:1000], label=f'Tempature')
     axis[0].plot(avg_temp_data, label=f'Average temparature')
+    axis[0].plot(predict(temp[:1000], avg_acc_total), label=f'Temparature prediction')
     axis[1].plot(df_data, label=f'Increase in temparature')
     axis[1].plot(avg_incr_temp_data, label=f'Average increase in temparature')
+    axis[1].plot(avg_acc_total, label=f'Predicted increase in temparature')
     axis[0].set_title(f'Tempature stats in {year}')
     axis[1].set_title(f'Tempature increase stats in {year}')
     axis[0].legend()
