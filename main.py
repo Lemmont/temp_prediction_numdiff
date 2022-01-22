@@ -90,10 +90,16 @@ def make_avg_acc(temps):
 
 def plot_data(year, temp, avg_temp_data, df_data, avg_incr_temp_data):
     avg_acc_total = make_avg_acc(temp)
+    predicted = predict(temp[:1000], avg_acc_total)
+    accuracy = 0
+    for i in range(len(temp[:1000])):
+        accuracy += abs(temp[i]-predicted[i])
+    accuracy /= 1000
+    print(f'accuracy: {100-(100*accuracy)}%')
     _, axis = plt.subplots(2, 1)
     axis[0].plot(temp[:1000], label=f'Tempature')
     axis[0].plot(avg_temp_data, label=f'Average temparature')
-    axis[0].plot(predict(temp[:1000], avg_acc_total), label=f'Temparature prediction')
+    axis[0].plot(predicted, label=f'Temparature prediction')
     axis[1].plot(df_data, label=f'Increase in temparature')
     axis[1].plot(avg_incr_temp_data, label=f'Average increase in temparature')
     axis[1].plot(avg_acc_total, label=f'Predicted increase in temparature')
