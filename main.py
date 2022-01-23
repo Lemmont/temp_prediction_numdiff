@@ -144,5 +144,5 @@ year = 4
 temp = read_data("result.txt")
 df_data = df_year(year, temp, 1)
 avg_temp_data = avg_temp(year, temp)
-avg_incr_temp_data = avg_incr_temp(year, df_data)
+avg_incr_temp_data = avg_incr_temp(df_data)
 plot_data(year, temp, avg_temp_data)
